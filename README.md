@@ -1,4 +1,5 @@
-# AgregaCast content API client library
+## AgregaCast content API client library
+This library is used to query the  content API through a easy to use interface that work both server and client side.
 
 ### ESLint + Prettier + Editorconfig
 

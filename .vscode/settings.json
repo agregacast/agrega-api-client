@@ -1,0 +1,46 @@
+{
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "extension-manager.extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "editorconfig.editorconfig"
+    ],
+    "editor.formatOnSave": true,
+    "eslint.enable": true,
+    "eslint.alwaysShowStatus": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "git.ignoreLimitWarning": true,
+    "eslint.validate": ["javascript", "typescript"],
+    "[javascript]": {
+        "editor.formatOnSave": true
+    },
+    "[javascriptreact]": {
+        "editor.formatOnSave": true
+    },
+    "files.exclude": {
+        "**/*.build": true,
+        "**/*.git": true,
+        "**/*.err": true,
+        "**/*.rec": true,
+        "**/*.log": true,
+        "**/*.evt": true,
+        "**/buildfre.*": true,
+        "**/buildchk.*": true,
+        "**/.DS_Store": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        ".build/**": true,
+        "out*/**": true,
+        "i18n/**": true,
+        "extensions/**/out/**": true,
+        "*.min.js": true
+    },
+    "files.eol": "\n",
+    "files.trimTrailingWhitespace": true,
+    "editor.renderWhitespace": "all",
+    "workbench.welcome.enabled": false
+}

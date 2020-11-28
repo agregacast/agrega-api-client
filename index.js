@@ -2,9 +2,9 @@ const ApiClient = require('./src/index');
 
 (async () => {
     const config = {
-        apiUrl: '',
-        apiToken: '',
-        apiAccessToken: ''
+        apiUrl: process.env.API_URL || '',
+        apiToken: process.env.API_TOKEN || '',
+        apiAccessToken: process.env.API_ACCESS_TOKEN || ''
     };
 
     const client = new ApiClient(config);

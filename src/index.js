@@ -1,6 +1,8 @@
 const axios = require('axios');
 const { withQuery } = require('with-query');
 
+const ENTRIES_ENDPOINT = '/entries';
+
 class ApiClient {
     constructor(config) {
         if (this.validateConfig(config)) {
@@ -34,8 +36,7 @@ class ApiClient {
     setupInterceptors() {
         this.instance.interceptors.request.use(
             function (config) {
-                // Do something before request is sent
-                // console.log(config);
+                // Do something before the request is sent
                 return config;
             },
             function (error) {
@@ -48,7 +49,6 @@ class ApiClient {
             function (response) {
                 // Any status code that lie within the range of 2xx cause this function to trigger
                 // Do something with response data
-                // console.log(response);
                 return response;
             },
             function (error) {
@@ -89,19 +89,19 @@ class ApiClient {
     }
 
     async fetchApiEntry(params) {
-        const url = '/entries';
+        const url = ENTRIES_ENDPOINT;
         const data = await this.makeRequest({ url, params });
         return data.data;
     }
 
     async fetchApiEntries(params) {
-        const url = '/entries';
+        const url = ENTRIES_ENDPOINT;
         const data = await this.makeRequest({ url, params });
         return data.data;
     }
 
     async countEntries(params) {
-        const url = '/entries';
+        const url = ENTRIES_ENDPOINT;
         const baseParams = {
             filter: {
                 return: 'count'

@@ -12,7 +12,14 @@ class ApiClient {
             // Internal instance of axios
             this.instance = axios.create({
                 baseURL: apiUrl,
-                timeout: 1000
+                timeout: 5000,
+                paramsSerializer: (params) => {
+                    const { apiToken } = this.config;
+                    return ApiClient.buildRequestParams({
+                        token: apiToken,
+                        ...params
+                    });
+                }
             });
 
             this.setupInterceptors();
@@ -49,6 +56,7 @@ class ApiClient {
             function (response) {
                 // Any status code that lie within the range of 2xx cause this function to trigger
                 // Do something with response data
+                console.log(response);
                 return response;
             },
             function (error) {
@@ -65,17 +73,11 @@ class ApiClient {
             url,
             method,
             params,
-            ...(method === 'post' ? data : null),
-            paramsSerializer: (params) => {
-                // To do: Investigate why the query appends and additional "?"
-                return this.buildRequestParams(params).replace('?', '');
-            }
+            ...(method === 'post' ? data : null)
         });
     }
 
-    buildRequestParams(params) {
-        const { apiToken } = this.config;
-
+    static buildRequestParams(params) {
         const queryOptions = {
             stringifyOpt: {
                 encode: false,
@@ -85,7 +87,8 @@ class ApiClient {
                 parseArray: false
             }
         };
-        return withQuery(null, { token: apiToken, ...params }, queryOptions);
+        // To do: Investigate why the query appends and additional "?"
+        return withQuery(null, params, queryOptions).replace('?', '');
     }
 
     async fetchApiEntry(params) {

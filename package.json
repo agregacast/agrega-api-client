@@ -4,7 +4,7 @@
     "description": "This library is used to query the content API through an easy to use interface that works on both server and client side.",
     "main": "index.js",
     "scripts": {
-        "start": "node -r dotenv/config ./index.js",
+        "start": "node -r dotenv/config ./examples/index.js",
         "test": "jest",
         "format": "prettier --write src/**/*.js"
     },

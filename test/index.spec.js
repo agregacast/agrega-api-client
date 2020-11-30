@@ -1,4 +1,4 @@
-const ApiClient = require('../src/index');
+const ApiClient = require('../index');
 const axios = require('axios');
 jest.mock('axios');
 

@@ -1,7 +1,7 @@
 {
     "name": "agrega-api-client",
     "version": "1.0.0",
-    "description": "",
+    "description": "This library is used to query the content API through an easy to use interface that works on both server and client side.",
     "main": "index.js",
     "scripts": {
         "start": "node -r dotenv/config ./index.js",

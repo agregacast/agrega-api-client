@@ -8,17 +8,11 @@ class ApiClient {
         // Stores the axios config
         this.config = null;
 
-        // Stores the config for the request being built
-        this.currentRequest = {};
-
-        // To do: Should we cache the request history ?
-        this.requestHistory = [];
-
-        // To do: Should we cache the response history ?
-        this.responseHistory = [];
-
         // Axios instance
         this.axios = null;
+
+        // Stores the config for the request being built
+        this.currentRequest = {};
     }
 
     // Sets up the base config and axios instance

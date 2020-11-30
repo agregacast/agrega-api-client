@@ -8,8 +8,9 @@ test('ApiClient instance config error exception', () => {
         apiToken: '',
         apiAccessToken: ''
     };
+    const client = new ApiClient();
     expect(() => {
-        new ApiClient(config);
+        client.setup(config);
     }).toThrow(Error);
 });
 
@@ -33,18 +34,22 @@ test('ApiClient build get request params', () => {
 });
 
 test('ApiClient instance get request', async () => {
-    const config = {
+    axios.request.mockResolvedValue({
+        data: {
+            slug: ''
+        }
+    });
+
+    const client = new ApiClient();
+    client.setup({
         apiUrl: 'mock',
         apiToken: 'mock',
         apiAccessToken: 'mock'
-    };
-    const client = new ApiClient(config);
-    const resp = {
-        slug: ''
-    };
-    axios.request.mockResolvedValue({ data: resp });
+    });
+    client.queryEntries();
+    client.params({ id: 'episodes' });
 
-    await client.fetchApiEntries({ id: 'episodes' });
+    await client.get();
     expect(axios.request).toHaveBeenCalled();
     expect(axios.request).toHaveBeenLastCalledWith({
         method: 'get',

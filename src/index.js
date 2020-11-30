@@ -4,24 +4,68 @@ const { withQuery } = require('with-query');
 const ENTRIES_ENDPOINT = '/entries';
 
 class ApiClient {
-    constructor(config) {
+    constructor() {
+        // Stores the axios config
+        this.config = null;
+
+        // Stores the config for the request being built
+        this.currentRequest = {};
+
+        // To do: Should we cache the request history ?
+        this.requestHistory = [];
+
+        // To do: Should we cache the response history ?
+        this.responseHistory = [];
+
+        // Axios instance
+        this.axios = null;
+    }
+
+    setup(config) {
+        const { config: instanceConfig } = this;
+        this.config = {
+            instanceConfig,
+            ...config
+        };
+        this.setupAxios();
+        return this;
+    }
+
+    queryEndpoint(endpoint) {
+        this.currentRequest.url = endpoint;
+        return this;
+    }
+    queryEntries() {
+        return this.queryEndpoint(ENTRIES_ENDPOINT);
+    }
+    params(params) {
+        this.currentRequest.params = params;
+        return this;
+    }
+    get() {
+        this.currentRequest.method = 'get';
+        return this.makeRequest();
+    }
+
+    setupAxios() {
+        // Axios instance
+        this.axios = null;
+        const { config } = this;
         if (this.validateConfig(config)) {
-            this.config = config;
             const { apiUrl = null } = config;
 
             // Internal instance of axios
-            this.instance = axios.create({
+            this.axios = axios.create({
                 baseURL: apiUrl,
                 timeout: 5000,
                 paramsSerializer: (params) => {
-                    const { apiToken } = this.config;
+                    const { apiToken } = config;
                     return ApiClient.buildRequestParams({
                         token: apiToken,
                         ...params
                     });
                 }
             });
-
             this.setupInterceptors();
         }
     }
@@ -41,7 +85,7 @@ class ApiClient {
     }
 
     setupInterceptors() {
-        this.instance.interceptors.request.use(
+        this.axios.interceptors.request.use(
             function (config) {
                 // Do something before the request is sent
                 return config;
@@ -52,29 +96,35 @@ class ApiClient {
             }
         );
 
-        this.instance.interceptors.response.use(
+        this.axios.interceptors.response.use(
             function (response) {
                 // Any status code that lie within the range of 2xx cause this function to trigger
                 // Do something with response data
-                console.log(response);
+                // console.log(response);
                 return response;
             },
             function (error) {
                 // Any status codes that falls outside the range of 2xx cause this function to trigger
                 // Do something with response error
-                console.log(error);
+                // console.log(error);
                 return Promise.reject(error);
             }
         );
     }
 
-    makeRequest({ url, method = 'get', params, data }) {
-        return this.instance.request({
+    async makeRequest() {
+        const { url, method = 'get', params, data } = this.currentRequest;
+        const response = await this.axios.request({
             url,
             method,
             params,
             ...(method === 'post' ? data : null)
         });
+
+        // Reset state
+        this.currentRequest = {};
+
+        return response;
     }
 
     static buildRequestParams(params) {
@@ -89,32 +139,6 @@ class ApiClient {
         };
         // To do: Investigate why the query appends and additional "?"
         return withQuery(null, params, queryOptions).replace('?', '');
-    }
-
-    async fetchApiEntry(params) {
-        const url = ENTRIES_ENDPOINT;
-        const data = await this.makeRequest({ url, params });
-        return data.data;
-    }
-
-    async fetchApiEntries(params) {
-        const url = ENTRIES_ENDPOINT;
-        const data = await this.makeRequest({ url, params });
-        return data.data;
-    }
-
-    async countEntries(params) {
-        const url = ENTRIES_ENDPOINT;
-        const baseParams = {
-            filter: {
-                return: 'count'
-            }
-        };
-        const data = await this.makeRequest({
-            url,
-            params: { params, ...baseParams }
-        });
-        return data.data;
     }
 }
 

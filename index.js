@@ -42,9 +42,24 @@ class ApiClient {
         this.currentRequest.params = params;
         return this;
     }
+    // Sets up the request params
+    body(params) {
+        this.currentRequest.data = params;
+        return this;
+    }
     // Shortcut method for performing a GET request
     get() {
         this.currentRequest.method = 'get';
+        return this.makeRequest();
+    }
+    // Shortcut method for performing a POST request
+    post() {
+        this.currentRequest.method = 'post';
+        return this.makeRequest();
+    }
+    // Shortcut method for performing a POST request
+    patch() {
+        this.currentRequest.method = 'patch';
         return this.makeRequest();
     }
     // Sets up the axios instance
@@ -54,19 +69,28 @@ class ApiClient {
         const { config } = this;
         // Validates the configuration before creating an axios instance
         if (this.validateConfig(config)) {
-            const { apiUrl = null } = config;
+            const { apiUrl = null, apiToken } = config;
 
             // Creates internal instance of axios
             this.axios = axios.create({
                 baseURL: apiUrl,
                 timeout: 5000,
                 paramsSerializer: (params) => {
-                    const { apiToken } = config;
+                    if (!params) return;
                     return ApiClient.buildRequestParams({
                         token: apiToken,
                         ...params
                     });
-                }
+                },
+                transformRequest: [
+                    (data) => {
+                        return {
+                            token: this.config.apiToken,
+                            access_token: this.config.apiAccessToken,
+                            ...data
+                        };
+                    }
+                ]
             });
 
             // Set up axios interceptors
@@ -118,12 +142,19 @@ class ApiClient {
     }
     // Performs the AJAX request with the params provided
     async makeRequest() {
-        const { url, method = 'get', params, data } = this.currentRequest;
+        const {
+            url,
+            method = 'get',
+            params = null,
+            data = null
+        } = this.currentRequest;
+
+        const isBodyRequired = ['post', 'patch'].indexOf(method) !== -1;
         const response = await this.axios.request({
             url,
             method,
-            params,
-            ...(method === 'post' ? data : null)
+            ...(params && { params }),
+            ...(isBodyRequired && data ? data : null)
         });
 
         // Reset state
